@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: ReplicaSet-Readiness
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: mynapp-readiness-rs
+  template:
+    metadata:
+      labels:
+        app: mynapp-readiness-rs
+    spec:
+      containers:
+        - name: mynapp
+          image: leeseonhyo817/myweb
+          readinessProbe:
+            exec:
+              command:
+                - ls
+                - /var/ready
+          ports:
+            - containerPort: 8080
