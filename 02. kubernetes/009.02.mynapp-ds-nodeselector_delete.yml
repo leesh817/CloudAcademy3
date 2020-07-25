@@ -1,0 +1,18 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: mynapp-ds-node-delete
+spec:
+  selector:
+    matchLabels:
+      app: mynapp-ds-node-delete
+  template:
+    metadata:
+      labels:
+        app: mynapp-ds-node-delete
+    spec:
+      containers:
+        - name: mynapp
+          image: leeseonhyo817/myweb
+          ports:
+            - containerPort: 8080
