@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mysql-liveness
+spec:
+  containers:
+  - name: mysql-liveness
+    image: mysql:5.7
+    env:
+      - name: MYSQL_ROOT_PASSWORD
+        value: dkagh1.
+    ports:
+      - containerPort: 3306
+    livenessProbe:
+      tcpSocket: 
+        port: 3306
+    # livenessProbe:
+    #   exec:
+    #     command:
+    #       - mysqladmin ping

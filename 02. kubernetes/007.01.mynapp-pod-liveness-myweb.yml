@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mynapp-pod-liveness
+spec:
+  containers:
+    - image: leeseonhyo817/myweb
+      name: mynapp-pod-liveness
+      ports:
+      - containerPort: 8080
+        protocol: TCP
+      livenessProbe:
+        httpGet:
+          path: /
+          port: 8080
