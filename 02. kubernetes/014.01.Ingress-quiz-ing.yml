@@ -1,0 +1,31 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: mynapp-ing-test
+spec:
+  rules:
+    - host: mynapp.example.com
+      http:
+        paths:
+          - path: /web1 # http://mynapp.example.com/web1
+            backend:
+              serviceName: mynapp-svc-myweb1
+              servicePort: 80
+          - path: /web2 # http://mynapp.example.com/web2
+            backend:
+              serviceName: mynapp-svc-myweb2
+              servicePort: 80
+    - host: web1.example.com
+      http:
+        paths:
+          - path: / # http://web1.example.com/
+            backend:
+              serviceName: mynapp-svc-web1
+              servicePort: 80
+    - host: web2.example.com
+      http:
+        paths:
+          - path: / # http://web2.example.com/
+            backend:
+              serviceName: mynapp-svc-web2
+              servicePort: 80

@@ -1,0 +1,88 @@
+---
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: mynapp-rs-myweb1
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: mynapp-rs-myweb1
+  template:
+    metadata:
+      labels:
+        app: mynapp-rs-myweb1
+    spec:
+      containers:
+      - name: mynapp
+        image: leeseonhyo817/myweb
+        ports:
+        - containerPort: 8080
+        args:
+          - mynapp-rs-myweb1
+---
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: mynapp-rs-myweb2
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: mynapp-rs-myweb2
+  template:
+    metadata:
+      labels:
+        app: mynapp-rs-myweb2
+    spec:
+      containers:
+      - name: mynapp
+        image: leeseonhyo817/myweb
+        ports:
+        - containerPort: 8080
+        args:
+          - mynapp-rs-myweb2
+---
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: mynapp-rs-web1
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: mynapp-rs-web1
+  template:
+    metadata:
+      labels:
+        app: mynapp-rs-web1
+    spec:
+      containers:
+      - name: mynapp
+        image: leeseonhyo817/myweb
+        ports:
+        - containerPort: 8080
+        args:
+          - mynapp-rs-web1
+---
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: mynapp-rs-web2
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: mynapp-rs-web2
+  template:
+    metadata:
+      labels:
+        app: mynapp-rs-web2
+    spec:
+      containers:
+      - name: mynapp
+        image: leeseonhyo817/myweb
+        ports:
+        - containerPort: 8080
+        args:
+          - mynapp-rs-web1

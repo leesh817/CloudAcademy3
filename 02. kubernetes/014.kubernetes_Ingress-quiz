@@ -1,0 +1,9 @@
+<실습>
+mynapp-example.com/web1 -> mynapp-svc-myweb1 -> mynapp-rs-myweb1
+mynapp-example.com/web2 -> mynapp-svc-myweb2 -> mynapp-rs-myweb2
+web1.example.com/       -> mynapp-svc-web1   -> mynapp-rs-web1
+web2.example.com/       -> mynapp-svc-web2   -> mynapp-rs-web2
+Ingress Resource: 1개
+Service Resource: 4개
+RS Resource     : 4개(복제본 3개)
+Pod Resource    : 12개
