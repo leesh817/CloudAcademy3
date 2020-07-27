@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: ReplicaSet
+metadata:
+  name: mynapp-nfs-rs
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: mynapp-nfs-rs
+  template:
+    metadata:
+      labels:
+        app: mynapp-nfs-rs
+    spec:
+      containers:
+        - name: mynapp
+          image: nginx
+          volumeMounts:
+            - name: nfs-share
+              mountPath: /usr/share/nginx/html
+          ports:
+            - containerPort: 80
+      volumes:
+        - name: nfs-share
+          persistentVolumeClaim:
+            claimName: mynapp-nfs-pvc
