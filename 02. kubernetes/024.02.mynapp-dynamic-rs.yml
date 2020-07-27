@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: ReplicaSet
+metadata:
+  name: mynapp-dynamic-rs
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: mynapp-dynamic-rs
+  template:
+    metadata:
+      labels:
+        app: mynapp-dynamic-rs
+    spec:
+      containers:
+        - name: mynapp
+          image: nginx
+          volumeMounts:
+            - name: web-content
+              mountPath: /usr/share/nginx/html
+          ports:
+            - containerPort: 80
+      volumes:
+        - name: web-content
+          persistentVolumeClaim:
+            claimName: mynapp-dynamic-pvc
