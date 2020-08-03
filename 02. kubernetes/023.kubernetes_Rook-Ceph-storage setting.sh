@@ -24,3 +24,6 @@ cd ../cephfs
 kubectl create -f storageclass.yaml
 cd ../.. # (~/rook/cluster/example/kubernetes/ceph)
 kubectl create -f filesystem.yaml
+
+# rook-cephfs의 storageclass를 default 설정
+  # kubectl patch storageclass rook-cephfs -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
