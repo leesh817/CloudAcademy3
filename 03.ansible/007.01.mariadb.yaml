@@ -1,0 +1,70 @@
+- hosts: node2
+  tasks:
+    - name: epel install
+      yum:
+        name: epel-release
+        state: installed
+    - name: install mysql-python
+      yum:
+        name: MySQL-python
+        state: installed
+    - name: add repository
+      yum_repository:
+        name: MariaDB
+        baseurl: http://mirror.yongbok.net/mariadb/yum/10.5/centos7-amd64
+        gpgcheck: 1
+        gpgkey: http://mirror.yongbok.net/mariadb/yum/RPM-GPG-KEY-MariaDB
+        description: MariaDB 10.5
+    - name: install MariaDB
+      yum:
+        name: MariaDB-server
+        state: installed
+    - name: start MariaDB
+      service:
+        name: mariadb
+        state: started
+        enabled: true
+    - name: firewall MariaDB
+      firewalld:
+        service: mysql
+        state: enabled
+        permanent: true
+        immediate: true
+    - name: edit database root password
+      mysql_user:
+        login_user: root
+        name: root
+        host: localhost
+        password: dkagh1.
+        check_implicit_admin: yes
+    - name: delete test database
+      mysql_db:
+        login_user: root
+        login_password: dkagh1.
+        db: test
+        state: absent
+    - name: delete unknown user
+      mysql_user:
+        login_user: root
+        login_password: dkagh1.
+        name: ''
+        host_all: yes
+        state: absent
+    - name: add database
+      mysql_db:
+        login_user: root
+        login_password: dkagh1.
+        name: wordpress
+        state: present
+    - name: add user
+      mysql_user:
+        login_user: root
+        login_password: dkagh1.
+        name: wp-admin
+        password: dkagh1.
+        priv: wordpress.*:ALL,GRANT
+        host: 192.168.123.51
+    - name: mysql restart
+      service:
+        name: mysql
+        state: restarted

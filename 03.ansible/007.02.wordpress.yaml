@@ -1,0 +1,80 @@
+- hosts: node1
+  tasks:
+    - name: httpd install
+      yum:
+        name: httpd
+        state: installed
+    - name: epel install
+      yum:
+        name: epel-release
+        state: installed
+    - name: php repository install
+      yum:
+        name: https://rpms.remirepo.net/enterprise/remi-release-7.rpm
+        state: present
+    - name: php install
+      yum:
+        name: php
+        enablerepo: remi-php74
+        state: installed
+    - name: php-mysqlnd install
+      yum:
+        name: php-mysqlnd
+        enablerepo: remi-php74
+        state: installed
+    - name: wordpress download
+      uri:
+        url: https://ko.wordpress.org/wordpress-5.3.4-ko_KR.tar.gz
+        dest: /home/student/
+    - name: wordpress unarchive
+      unarchive:
+        remote_src: true
+        src: /home/student/wordpress-5.3.4-ko_KR.tar.gz
+        dest: /var/www/html/
+        owner: apache
+        group: apache
+    - name: copy config.php
+      copy:
+        remote_src: true
+        src: /var/www/html/wordpress/wp-config-sample.php 
+        dest: /var/www/html/wordpress/wp-config.php
+    - name: edit config.php(database_name)
+      replace:
+        path: /var/www/html/wordpress/wp-config.php
+        regexp: database_name_here
+        replace: wordpress
+    - name: edit config.php(user_name)  
+      replace:
+        path: /var/www/html/wordpress/wp-config.php
+        regexp: username_here
+        replace: wp-admin
+    - name: edit config.php(password)
+      replace:
+        path: /var/www/html/wordpress/wp-config.php
+        regexp: password_here
+        replace: dkagh1.
+    - name: edit config.php(host)
+      replace:
+        path: /var/www/html/wordpress/wp-config.php
+        regexp: localhost
+        replace: 192.168.123.52
+    - name: selinux library install
+      yum:
+        name: libsemanage-python
+        state: installed
+    - name: edit selinux
+      seboolean:
+        name: httpd_can_network_connect_db
+        state: yes
+        persistent: yes
+    - name: apache start
+      service:
+        name: httpd
+        state: started
+        enabled: true
+    - name: apache firewall
+      firewalld:
+        service: http
+        state: enabled
+        permanent: true
+        immediate: true
