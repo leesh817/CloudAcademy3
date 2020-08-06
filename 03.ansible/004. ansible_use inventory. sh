@@ -1,0 +1,24 @@
+vi 004.01.inventory
+ansible-inventory -i 004.01.inventory --list
+ansible-inventory -i 004.01.inventory --graph
+  # inventory 파일에 있는 목록을 list 형태와 graph 형태로 출력
+
+ansible 'web:db' -i 004.01.inventory --list-hosts
+  # web과 db 그룹에 있는 host를 모두 출력
+ansible 'web:centos' -i 004.01.inventory --list-hosts
+  # web과 centos 그룹에 있는 host들을 모두 출력
+ansible 'db:&centos' -i 004.01.inventory --list-hosts
+  # db와 centos 그룹에 있는 host 중 중복되는 host만 출력
+ansible 'db:!ubuntu' -i 004.01.inventory --list-hosts
+  # db 그룹과 ubuntu에 없는 그룹을 or 연산해서 출력
+ansible 'db:&centos:!web-app' -i 004.01.inventory --list-hosts
+  # db 그룹과 centos 그룹 교집합과 web-app 그룹에 없는 host 출력
+
+vi 004.02.inventory
+ansible -i 004.02.inventory all --list-all
+  # 004.02.inventory 파일에 있는 모든 것을 출력
+ansible -i 004.02.inventory control --list-hosts
+  # control 그룹에 있는 host 출력
+ansible -i 004.02.inventory manage --list-hosts
+  # manage 그룹에 있는 hosts 출력
+ansible -i 004.02.inventory all -m ping -u student -k
