@@ -1,0 +1,8 @@
+nfs:
+  exports:
+    directory: /wordpress
+    subnet: 192.168.123.0/24
+    options: rw,sync,no_root_squash
+  block:
+    device: /dev/vdb
+    fs_type: ext4

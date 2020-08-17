@@ -1,0 +1,5 @@
+---
+sebool_httpd_lists:
+  - httpd_can_network_connect
+  - httpd_can_network_connect_db
+  - httpd_use_nfs

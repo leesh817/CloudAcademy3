@@ -1,0 +1,24 @@
+- hosts: wp
+  become: yes
+  roles: 
+    - common
+
+- hosts: wp-nfs
+  become: yes
+  roles: 
+    - nfs
+
+- hosts: wp-db
+  become: yes
+  roles: 
+    - mariadb
+
+- hosts: wp-web
+  become: yes
+  roles: 
+    - apache
+
+- hosts: wp-lb
+  become: yes
+  roles: 
+    - haproxy

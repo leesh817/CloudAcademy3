@@ -1,0 +1,6 @@
+apache:
+  port: 80
+
+php:
+  repo: 
+    pkg: "https://rpms.remirepo.net/enterprise/remi-release-7.rpm "
