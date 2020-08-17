@@ -1,0 +1,57 @@
+- hosts: wp-lb
+  become: true
+  tasks:
+    - name: install haproxy
+      yum:
+        name: haproxy
+        state: installed
+    - name: install libsemanage-python
+      yum:
+        name: libsemanage-python
+        state: installed
+    - name: edit selinux haproxy
+      seboolean:
+        name: haproxy_connect_any
+        state: yes
+        persistent: yes
+    - name: haproxy firewall
+      firewalld:
+        service: http
+        state: enabled
+        permanent: true
+        immediate: true
+    - name: edit frontend port
+      replace:
+        path: /etc/haproxy/haproxy.cfg
+        regexp: '5000'
+        replace: '80'
+    - name: edit use_backend static
+      replace:
+        path: /etc/haproxy/haproxy.cfg
+        regexp: 'use_backend static'
+        replace: '#use_backend static'
+    - name: edit backend(5001)
+      replace:
+        path: /etc/haproxy/haproxy.cfg
+        regexp: 'server  app1 127.0.0.1:5001 check'
+        replace: 'server  node2 192.168.123.52:80 check'
+    - name: edit backend(5002)
+      replace:
+        path: /etc/haproxy/haproxy.cfg
+        regexp: 'server  app2 127.0.0.1:5002 check'
+        replace: 'server  node3 192.168.123.53:80 check'
+    - name: edit backend(5003)
+      replace:
+        path: /etc/haproxy/haproxy.cfg
+        regexp: 'server  app3 127.0.0.1:5003 check'
+        replace: ''
+    - name: edit backend(5004)
+      replace:
+        path: /etc/haproxy/haproxy.cfg
+        regexp: 'server  app4 127.0.0.1:5004 check'
+        replace: ''
+    - name: haproxy start
+      service:
+        name: haproxy
+        state: started
+        enabled: true

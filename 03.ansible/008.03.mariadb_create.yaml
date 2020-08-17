@@ -1,0 +1,160 @@
+- hosts: wp-db
+  become: true
+  tasks:
+    - name: epel install
+      yum:
+        name: epel-release
+        state: installed
+    - name: install libsemanage-python
+      yum:
+        name: libsemanage-python
+        state: installed
+    - name: install mysql-python
+      yum:
+        name: MySQL-python
+        state: installed
+    - name: edit selinux(DB)
+      seboolean:
+        name: mysql_connect_any
+        state: yes
+        persistent: yes
+    - name: add repository
+      yum_repository:
+        name: MariaDB
+        baseurl: http://mirror.yongbok.net/mariadb/yum/10.5/centos7-amd64
+        gpgcheck: 1
+        gpgkey: http://mirror.yongbok.net/mariadb/yum/RPM-GPG-KEY-MariaDB
+        description: MariaDB 10.5
+    - name: install MariaDB
+      yum:
+        name: MariaDB-server
+        state: installed
+    - name: firewall MariaDB
+      firewalld:
+        service: mysql
+        state: enabled
+        permanent: true
+        immediate: true
+    - name: edit Service Interface
+      lineinfile:
+        line: 'bind-address=192.168.123.54'
+        insertafter: '\[mysqld\]'
+        path: /etc/my.cnf.d/server.cnf
+    - name: start MariaDB
+      service:
+        name: mariadb
+        state: started
+        enabled: true
+    - name: edit database root password
+      mysql_user:
+        login_user: root
+        name: root
+        host: localhost
+        password: dkagh1.
+        check_implicit_admin: yes
+    - name: delete test database
+      mysql_db:
+        login_user: root
+        login_password: dkagh1.
+        db: test
+        state: absent
+    - name: delete unknown user
+      mysql_user:
+        login_user: root
+        login_password: dkagh1.
+        name: ''
+        host_all: yes
+        state: absent
+    - name: add database
+      mysql_db:
+        login_user: root
+        login_password: dkagh1.
+        name: wordpress
+        state: present
+    - name: add user
+      mysql_user:
+        login_user: root
+        login_password: dkagh1.
+        name: wp-admin
+        password: dkagh1.
+        priv: wordpress.*:ALL,GRANT
+        host: 192.168.123.%
+    - name: nfs-server install
+      yum:
+        name: nfs-utils
+        state: installed
+    - name: create dir for nfs
+      file:
+        path: /exports
+        state: directory
+        mode: '0775'
+    - name: wordpress download
+      uri:
+        url: https://ko.wordpress.org/wordpress-5.3.4-ko_KR.tar.gz
+        dest: /home/student/
+        force: no
+    - name: wordpress unarchive
+      unarchive:
+        remote_src: true
+        src: /home/student/wordpress-5.3.4-ko_KR.tar.gz
+        dest: /exports
+        owner: root
+        group: root
+        mode: '0775'
+    - name: copy config.php
+      copy:
+        remote_src: true
+        src: /exports/wordpress/wp-config-sample.php 
+        dest: /exports/wordpress/wp-config.php
+        mode: '644'
+        owner: root
+        group: root
+        force: no
+    - name: edit config.php(database_name)
+      replace:
+        path: /exports/wordpress/wp-config.php
+        regexp: database_name_here
+        replace: wordpress
+    - name: edit config.php(user_name)  
+      replace:
+        path: /exports/wordpress/wp-config.php
+        regexp: username_here
+        replace: wp-admin
+    - name: edit config.php(password)
+      replace:
+        path: /exports/wordpress/wp-config.php
+        regexp: password_here
+        replace: dkagh1.
+    - name: edit config.php(host)
+      replace:
+        path: /exports/wordpress/wp-config.php
+        regexp: localhost
+        replace: 192.168.123.54
+    - name: edit export file
+      lineinfile:
+        path: /etc/exports
+        insertafter: ''
+        line: '/exports/wordpress 192.168.123.0/24(rw,sync,no_root_squash)'
+    - name: edit firewall (nfs)
+      firewalld:
+        service: nfs
+        state: enabled
+        immediate: true
+        permanent: true
+    - name: edit firewall(rpc-bind)
+      firewalld:
+        service: rpc-bind
+        state: enabled
+        immediate: true
+        permanent: true
+    - name: edit firewall(mountd)
+      firewalld:
+        service: mountd
+        state: enabled
+        immediate: true
+        permanent: true
+    - name: nfs service start
+      service:
+        name: nfs
+        state: started
+        enabled: true

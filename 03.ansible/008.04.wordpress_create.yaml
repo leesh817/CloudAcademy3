@@ -1,0 +1,75 @@
+- hosts: wp-web
+  become: true
+  tasks:
+    - name: selinux library install
+      yum:
+        name: libsemanage-python
+        state: installed
+    - name: edit selinux(DB)
+      seboolean:
+        name: httpd_can_network_connect_db
+        state: yes
+        persistent: yes
+    - name: edit selinux(httpd)
+      seboolean:
+        name: httpd_can_network_connect
+        state: yes
+        persistent: yes
+    - name: edit selinux(NFS)
+      seboolean:
+        name: httpd_use_nfs
+        state: yes
+        persistent: yes
+    - name: create dir for nfs
+      file:
+        path: /var/www/html
+        state: directory
+        mode: '0775'
+    - name: install nfs-client
+      yum:
+        name: nfs-utils
+        state: installed
+    - name: start nfs-client
+      service:
+        name: nfs
+        state: started
+        enabled: true
+    - name: nfs-client setting
+      mount:
+        path: /var/www/html
+        src: 192.168.123.54:/exports/wordpress/
+        fstype: nfs
+        state: mounted
+    - name: httpd install
+      yum:
+        name: httpd
+        state: installed
+    - name: epel install
+      yum:
+        name: epel-release
+        state: installed
+    - name: php repository install
+      yum:
+        name: https://rpms.remirepo.net/enterprise/remi-release-7.rpm
+        state: installed
+    - name: php install
+      yum:
+        name: php
+        enablerepo: remi-php74
+        state: installed
+    - name: php-mysqlnd install
+      yum:
+        name: php-mysqlnd
+        enablerepo: remi-php74
+        state: installed
+    - name: apache firewall
+      firewalld:
+        service: http
+        state: enabled
+        permanent: true
+        immediate: true
+    - name: apache start
+      service:
+        name: httpd
+        state: started
+        enabled: true
