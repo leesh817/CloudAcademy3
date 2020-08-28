@@ -1,4 +1,3 @@
-# Internet GW
 resource "aws_internet_gateway" "igw" {
   vpc_id = aws_vpc.net.id
 
@@ -7,7 +6,6 @@ resource "aws_internet_gateway" "igw" {
   }
 }
 
-# Routing Table for Internet
 resource "aws_route_table" "route-pub" {
   vpc_id = aws_vpc.net.id
   route {
@@ -20,7 +18,6 @@ resource "aws_route_table" "route-pub" {
   }
 }
 
-# Routing Table associate for Public Subnet
 resource "aws_route_table_association" "route-associate-pub" {
   count = 3
 

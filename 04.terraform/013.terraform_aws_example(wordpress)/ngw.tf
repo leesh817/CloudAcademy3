@@ -1,9 +1,7 @@
-# EIP for NAT GW
 resource "aws_eip" "ngw-eip" {
   vpc = true
 }
 
-# NAT Gateway
 resource "aws_nat_gateway" "ngw" {
   allocation_id = aws_eip.ngw-eip.id
   subnet_id     = aws_subnet.net-public[0].id
@@ -14,7 +12,6 @@ resource "aws_nat_gateway" "ngw" {
   }
 }
 
-# Routing Table for NAT
 resource "aws_route_table" "route-nat" {
   vpc_id = aws_vpc.net.id
   route {
@@ -27,7 +24,6 @@ resource "aws_route_table" "route-nat" {
   }
 }
 
-# Routing Table associations for Private Subnet
 resource "aws_route_table_association" "route-associate-priv" {
   count = 3
 
