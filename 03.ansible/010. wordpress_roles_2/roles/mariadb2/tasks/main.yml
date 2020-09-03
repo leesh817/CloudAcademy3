@@ -1,0 +1,64 @@
+- name: galera ip setting(node3)                # 설정파일에 입력될 변수 세팅
+  setup:
+  delegate_to: node3
+- name: set fact node3 ip
+  set_fact:
+    node3_ip: "{{ ansible_eth1.ipv4.address }}"
+- name: galera ip setting(node4)
+  setup:
+  delegate_to: node4
+- name: set fact node4 ip
+  set_fact:
+    node4_ip: "{{ ansible_eth1.ipv4.address }}"
+- name: Copy mariadb configuration              # 설정파일 복사
+  template:
+    src: galera4.cnf.j2
+    dest: /etc/my.cnf.d/galera.cnf
+  notify:
+  - Restart mariadb
+- name: mariadb service stop
+  service:
+    name: mariadb
+    state: stopped
+- name: semanage permissive
+  selinux_permissive:
+    name: mysqld_t
+    permissive: true
+- name: mariadb restart
+  service:
+    name: mariadb
+    state: restarted
+    enabled: true
+- name: Active seboolean for mysql              # selinux 해제
+  seboolean: 
+    name: mysql_connect_any 
+    state: yes 
+    persistent: yes
+- name: Delete anonymous user in DB             # 익명 사용자 제거
+  mysql_user: 
+    login_user: root 
+    login_password: dkagh1. 
+    name: '' 
+    host_all: yes 
+    state: absent
+- name: Delete test db in DB                    # test DB 삭제
+  mysql_db: 
+    login_user: root 
+    login_password: dkagh1. 
+    db: test 
+    state: absent
+- name: Create DB for wordpress                 # wordpress용 Database 생성
+  mysql_db: 
+    login_user: root 
+    login_password: dkagh1. 
+    name: "{{ mariadb['wp']['name'] }}"
+    state: present
+- name: Create User for wordpress               # User 생성
+  mysql_user: 
+    login_user: root 
+    login_password: dkagh1. 
+    name: "{{ mariadb['wp']['user'] }}" 
+    password: "{{ mariadb['wp']['pwd'] }}"
+    priv: "{{ mariadb['wp']['priv'] }}" 
+    host: "{{ mariadb['wp']['host'] }}" 
+    state: present

@@ -1,0 +1,66 @@
+---
+- name: Install nfs-utils                           # nfs package 설치
+  yum:
+    name: nfs-utils
+    state: latest
+- name: Create a directory for nfs exports          # nfs 공유 디렉토리 설치
+  file:
+    path: "{{ nfs['exports']['directory'] }}"
+    state: directory
+    mode: '0775'
+- block:
+  - name: Create a new primary partition for LVM    # block device 분할
+    parted:
+      device: "{{ nfs['block']['device'] }}"
+      number: 1
+      flags: [ lvm ]
+      state: present
+      part_start: 5GiB
+  - name: Create a filesystem                       # file system 생성
+    filesystem:
+      fstype: "{{ nfs['block']['fs_type'] }}"
+      dev: "{{ nfs['block']['device'] }}1"
+  - name: mount /dev/vdb1 on /wordpress             # block device mount 진행
+    mount:
+      path: "{{ nfs['exports']['directory'] }}"
+      src: "{{ nfs['block']['device'] }}1"
+      fstype: "{{ nfs['block']['fs_type'] }}"
+      state: mounted
+  when: nfs['block']['device'] is defined
+- name: Create exports to webserver
+  template:
+    src: exports.j2
+    dest: /etc/exports
+  notify:
+  - Re-export all directories
+- name: Set wordpress url                           # wordpress download link 변수 설정
+  set_fact:
+    wp_url: "https://ko.wordpress.org/wordpress-{{ wordpress['source']['version'] }}-{{ wordpress['source']['language'] }}.tar.gz"
+    wp_filename: "wordpress-{{ wordpress['source']['version'] }}-{{ wordpress['source']['language'] }}.tar.gz"
+- name: Download wordpress sources                  # wordpress download
+  get_url: 
+    url: "{{ wp_url }}"
+    dest: "/tmp/{{ wp_filename }}"
+- name: Unarchive wordpress archive                 # wordpress unarchive
+  unarchive: 
+    src: "/tmp/{{ wp_filename }}"
+    dest: "{{ nfs['exports']['directory'] }}"
+    remote_src: yes 
+    owner: root 
+    group: root
+- name: Copy wp-config.php                          # wordpress 설정파일 복사
+  template:
+    src: wp-config.php.j2
+    dest: "{{ nfs['exports']['directory'] }}/wordpress/wp-config.php"
+- name: Start nfs service                           # nfs service 시작
+  service:
+    name: nfs
+    enabled: true
+    state: started
+- name: Allow port for nfs, rpc-bind, mountd        # nfs 사용 방화벽 port 해제
+  firewalld:
+    service: "{{ item }}"
+    permanent: yes
+    state: enabled
+    immediate: yes
+  with_items: "{{ firewall_nfs_lists }}"

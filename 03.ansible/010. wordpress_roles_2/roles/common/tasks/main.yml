@@ -1,0 +1,17 @@
+---
+- block:                              # CentOS 운영체제 사용 block 구문
+  - name: Install epel-release        # epel release 설치
+    yum: 
+      name: epel-release 
+      state: latest
+  - name: Install libsemanage-python for seboolean    # selinux manager 설치
+    yum: 
+      name: libsemanage-python 
+      state: latest
+  when: ansible_distribution == 'CentOS'
+
+- block:                              # Ubuntu 운영체제 사용 block 구문
+  - name: Update apt cache            # 운영체제의 cache 업데이트
+    apt:
+      update_cache: yes
+  when: ansible_distribution == 'Ubuntu'

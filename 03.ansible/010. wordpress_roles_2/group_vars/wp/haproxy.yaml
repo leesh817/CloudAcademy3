@@ -1,0 +1,10 @@
+haproxy:
+  frontend:
+    port: 80                    # haproxy의 frontend에 open할 port number
+  backend:
+    name: wordpress
+    balance_type: roundrobin    # loadbalancing type 지정
+    wordpress1:
+      port: 80                  # wordpress web node1의 open된(패킷을 넘겨줄)port number
+    wordpress2:
+      port: 80                  # wordpress web node1의 open된(패킷을 넘겨줄)port number

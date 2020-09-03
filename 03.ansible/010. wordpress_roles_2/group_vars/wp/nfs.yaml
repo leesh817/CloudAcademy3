@@ -1,0 +1,8 @@
+nfs:                                    # NFS service 설정
+  exports:
+    directory: /wordpress
+    subnet: 192.168.123.0/24            # 접근 가능한 subnet 지정
+    options: rw,sync,no_root_squash     # NFS option 지정
+  block:
+    device: /dev/vdb
+    fs_type: ext4

@@ -1,0 +1,7 @@
+apache:
+  port: 80        # apache service에서 사용할 port number 변수처리
+
+php:
+  repo: 
+    pkg: "https://rpms.remirepo.net/enterprise/remi-release-7.rpm"
+                  # php 설치를 위한 repository 추가용 file link

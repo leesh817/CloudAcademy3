@@ -1,0 +1,9 @@
+wordpress:
+  source:                   # wordpress download version과 language 지정
+    version: 5.3.4
+    language: ko_KR
+  db:                       # wordpress와 DB 연동에 필요한 변수 지정
+    name: wordpress_db
+    username: admin
+    password: dkagh1.
+    host: 192.168.123.54

@@ -1,0 +1,11 @@
+mariadb:
+  repo:       # MariaDB repository 추가용 baseurl과 gpgkey link
+    baseurl: http://mirror.yongbok.net/mariadb/yum/10.4/centos7-amd64
+    gpgkey: http://mirror.yongbok.net/mariadb/yum/RPM-GPG-KEY-MariaDB
+  wp:         # MariaDB 내부의 생성할 구성 지정
+    name: wordpress_db
+    user: admin
+    pwd: dkagh1.
+    priv: wordpress_db.*:ALL,GRANT
+    host: '192.168.123.%'
+  port: 3306  # MariaDB 접근용 port number

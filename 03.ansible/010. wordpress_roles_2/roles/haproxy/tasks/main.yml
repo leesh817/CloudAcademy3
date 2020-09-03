@@ -1,0 +1,14 @@
+---
+- name: Deploy to CentOS              # CentOS OS 사용 시 불러올 task
+  include_tasks: roles/haproxy/tasks/centos/main.yml
+  when: ansible_distribution == "CentOS"
+
+- name: Deploy to Ubuntu              # Ubuntu OS 사용 시 불러올 task
+  include_tasks: roles/haproxy/tasks/ubuntu/main.yml
+  when: ansible_distribution == "Ubuntu"
+
+- name: Start haproxy service         # haproxy service 시작
+  service:
+    name: haproxy
+    enabled: true
+    state: started
